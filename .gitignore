@@ -131,3 +131,5 @@ dmypy.json
 *test*
 *.ipynb_checkpoints
 *.DS_Store
+config/experiments/*
+sh/*
