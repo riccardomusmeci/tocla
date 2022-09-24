@@ -5,7 +5,7 @@ from src.io import read_rgb
 from torch.utils.data import Dataset
 from typing import Callable, Dict, List, Tuple, Union
 
-class Dataset(Dataset):
+class TrainDataset(Dataset):
     
     EXTENSIONS = (
         "jpg",
@@ -46,6 +46,7 @@ class Dataset(Dataset):
         
         data_dir = os.path.join(root_dir, "train" if train else "val")
         # checking structure
+        self.train = train
         try:
             self._sanity_check(
                 data_dir=data_dir, 
@@ -57,6 +58,7 @@ class Dataset(Dataset):
         self.class_map = class_map
         self.images, self.targets = self._load_samples(max_samples_per_class=max_samples_per_class)
         self.transform = transform
+        self.stats()
         
     def _sanity_check(
         self,
@@ -84,7 +86,7 @@ class Dataset(Dataset):
                 if len(os.listdir(label_dir))==0:
                     raise FileExistsError(f"Folder {label_dir} is empty.")
                 
-        print(f"> Dataset sanity check OK")
+        print(f"> {'Train' if self.train else 'Val/Test'} dataset sanity check OK")
     
     def _load_samples(
         self, 
@@ -120,7 +122,7 @@ class Dataset(Dataset):
         """
         unique, counts = np.unique(self.targets, return_counts=True)
         num_samples = len(self.targets)
-        print(f" ----------- Dataset Stats -----------")
+        print(f" ----------- Dataset {'Train' if self.train else 'Val/Test'} Stats -----------")
         for k in range(len(unique)):
             classes = self.class_map[k]
             if isinstance(classes, str):
@@ -142,4 +144,126 @@ class Dataset(Dataset):
             
     def __len__(self):
         return len(self.images)
+    
+class InferenceDataset(Dataset):
+    
+    EXTENSIONS = (
+        "jpg",
+        "jpeg",
+        "png",
+        "ppm",
+        "bmp",
+        "pgm",
+        "tif",
+        "tiff",
+        "webp",
+    )
+    
+    def __init__(
+        self,
+        root_dir: str,
+        class_map: Dict[int, Union[str, List[str]]] = None,
+        transform: Callable = None,
+    ) -> None:
+        """Image Classification Inference Dataset (a folder with images)
+
+        Args:
+            root_dir (str): root data dir (must be with train and val folders)
+            class_map (Dict)
+            transform (Callable, optional): set of data transformations. Defaults to None.
+
+        Raises:
+            FileNotFoundError: if something is found erroneous in the dataset
+        """
+        
+        super().__init__()
+        # checking structure
+        try:
+            self._sanity_check(
+                root_dir=root_dir, 
+                class_map=class_map
+            )
+        except Exception as e:
+            raise e
+        
+        self.class_map = class_map
+        self.data_dir = root_dir
+        self.images, self.targets = self._load_samples()
+        self.transform = transform
+    
+    def _sanity_check(
+        self,
+        root_dir: str,
+        class_map: Dict[int, Union[str, List[str]]] = None
+    ):
+        """Checks dataset structure
+
+        Args:
+            root_dir (str): data directory
+            class_map (Dict[int, Union[str, List[str]]]): class map {e.g. {0: 'class_a', 1: ['class_b', 'class_c']}}
+            
+        Raises:
+            FileNotFoundError: if the data folder is not right based on the structure in class_map
+            FileExistsError: if some label does not have images in its folder
+
+        """
+        if class_map is None:
+            if not (os.path.exists(root_dir)):
+                    raise FileNotFoundError(f"Folder {root_dir} does not exist") 
+            images = [f for f in os.listdir(root_dir) if f.split(".")[-1].lower() in self.EXTENSIONS]
+            if len(images) == 0:
+                raise FileExistsError(f"Folder {root_dir} does not have images.")
+        else:
+            for k, labels in class_map.items():
+                if not isinstance(labels, list):
+                    labels = [labels]
+                for l in labels:
+                    label_dir =  os.path.join(root_dir, l)
+                    if not (os.path.exists(label_dir)):
+                        raise FileNotFoundError(f"Folder {label_dir} does not exist") 
+                    if len(os.listdir(label_dir))==0:
+                        raise FileExistsError(f"Folder {label_dir} is empty.")
+                
+        print(f"> Inference dataset sanity check OK")
+    
+    def _load_samples(self) -> Tuple[List[str], List[int]]:
+        """loads image paths + targets for the dataset
+
+        Returns:
+           Tuple[List[str], List[int]]: images paths + targets (could be None)
+        """
+        
+        if self.class_map is None:
+            paths = [os.path.join(self.data_dir, f) for f in os.listdir(self.data_dir) if f.split(".")[-1].lower() in self.EXTENSIONS]
+            targets = [-1]*len(paths)
+        else:
+            paths, targets = [], []
+            for c, labels in self.class_map.items():
+                if isinstance(labels, str):
+                    labels = [labels]
+                c_images, c_targets = [], []
+                for label in labels:
+                    label_dir = os.path.join(self.data_dir, label)
+                    c_images += [os.path.join(label_dir, f) for f in os.listdir(label_dir) if f.split(".")[-1].lower() in self.EXTENSIONS]
+                c_targets += [c] * len(c_images)
+                paths += c_images
+                targets += c_targets
+        
+        return paths, targets
+        
+    def __getitem__(self, index) -> Image.Image:
+        
+        img_path = self.images[index]
+        target = self.targets[index]
+        
+        img = read_rgb(img_path)
+        
+        if self.transform is not None:
+            img = self.transform(img)
+        
+        return img, target
+            
+    def __len__(self):
+        return len(self.images)
+    
     
