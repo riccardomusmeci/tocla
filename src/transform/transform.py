@@ -21,8 +21,10 @@ class Transform:
         color_jitter_p: float = .5,
         grayscale_p: float = 0.2,
         h_flip_p: float = .5,
+        v_flip_p: float = .5,
         kernel: tuple = (5, 5),
         sigma: tuple = (.1, 2),
+        gaussian_p: float = 0.1,
         solarization_p: float = 0.2,
         solarize_t: int = 170,
     ):
@@ -41,9 +43,10 @@ class Transform:
             color_jitter_p (float, optional): color jitter prob. Defaults to 0.8.
             grayscale_p (float, optional): grayscale prob. Defaults to 0.1.
             h_flip_p (float, optional): horizontal flip prob. Defaults to 0.5.
+            v_flip_p (float, optional): vertical flip prob. Defaults to 0.5.
             kernel (tuple, optional): gaussian blur kernel. Defaults to (3, 3).
             sigma (tupla, optional): gaussian blur std. Defaults to (.1, 2).
-            gaussian_blur_p (float, optional): gaussian blur prob. Defaults to 0.1.
+            gaussian_p (float, optional): gaussian blur prob. Defaults to 0.1.
             solarization_p (float, optional): solarization prob. Defaults to 0.2.
             solarize_t (int, optional): solarization threshold. Defaults to 170.
         """
@@ -63,6 +66,7 @@ class Transform:
                 ),
                 # Flip and ColorJitter
                 A.HorizontalFlip(p=h_flip_p),
+                A.VerticalFlip(p=v_flip_p),
                 A.ColorJitter(
                     brightness=brightness, 
                     contrast=contrast, 
@@ -75,7 +79,7 @@ class Transform:
                 A.GaussianBlur(
                     blur_limit=kernel, 
                     sigma_limit=sigma, 
-                    p=0.1
+                    p=gaussian_p,
                 ), 
                 A.Solarize(
                     threshold=solarize_t, 
