@@ -7,20 +7,19 @@ def parse_args() -> argparse.Namespace:
     
     parser.add_argument(
         "--data-dir",
-        default="/Users/riccardomusmeci/Developer/data/enel/spain/broken_insulator",
-        #required=True,
+        required=True,
         help="path to data directory"
     )
     
     parser.add_argument(
         "--config",
-        default="config/test.yml",
+        default="config/config.yml",
         help="path to YAML configuration file.",
     )
     
     parser.add_argument(
         "--output-dir",
-        default="/Users/riccardomusmeci/Developer/experiments/classifier-playground/spain/insulator_broken/",
+        default=".",
         help="where to save checkpoints during training"
     )
     
@@ -36,7 +35,6 @@ def parse_args() -> argparse.Namespace:
     )
 
     return parser.parse_args()
-
 
 if __name__ == "__main__":
     args = parse_args()
