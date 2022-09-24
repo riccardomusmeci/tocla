@@ -133,3 +133,5 @@ dmypy.json
 *.DS_Store
 config/experiments/*
 sh/*
+*.sh
+notebooks/test*
