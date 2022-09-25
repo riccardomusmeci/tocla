@@ -6,6 +6,7 @@ datamodule:
   }
   imbalanced: true
   max_samples_per_class: 5000
+  random_sample: true
   batch_size: 64
   shuffle: true
   num_workers: 5
@@ -29,8 +30,8 @@ model:
 ###### Loss ###### 
 loss:                                           
   name: xent                                  # name of the loss criterion to use
-  weight: [.3, .7]                            # weight for each class in the loss computation (if dataset is imbalanced) 
-  label_smoothing: 0.0                        # label smoothing factor -> to prevent model being overconfident (calibration)
+  weight: [0.963, 1.0399568]                  # weight for each class in the loss computation (if dataset is imbalanced) 
+  label_smoothing: 0.15                       # label smoothing factor -> to prevent model being overconfident (calibration)
   
 ###### Optimizer ######  
 optimizer:

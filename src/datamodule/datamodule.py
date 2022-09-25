@@ -12,6 +12,7 @@ class DataModule(pl.LightningDataModule):
         class_map: Dict[int, Union[str, List[str]]],
         batch_size: int,
         max_samples_per_class: int = None,
+        random_samples: bool = False,
         train_transform: Callable = None, 
         val_transform: Callable = None, 
         imbalanced: bool = False,
@@ -26,6 +27,7 @@ class DataModule(pl.LightningDataModule):
         self.class_map = class_map
         self.batch_size = batch_size
         self.max_samples_per_class = max_samples_per_class
+        self.random_samples = random_samples
         self.train_transform = train_transform
         self.val_transform = val_transform
         self.imbalanced = imbalanced
@@ -47,6 +49,7 @@ class DataModule(pl.LightningDataModule):
                 train=True,
                 class_map=self.class_map,
                 max_samples_per_class=self.max_samples_per_class,
+                random_samples=self.random_samples,
                 transform=self.train_transform
             )
             
@@ -55,6 +58,7 @@ class DataModule(pl.LightningDataModule):
                 train=False,
                 class_map=self.class_map,
                 max_samples_per_class=None,
+                random_samples=False,
                 transform=self.val_transform
             )
         
@@ -64,6 +68,7 @@ class DataModule(pl.LightningDataModule):
                 train=False,
                 class_map=self.class_map,
                 max_samples_per_class=None,
+                random_samples=False,
                 transform=self.val_transform
             )
             

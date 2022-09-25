@@ -1,4 +1,5 @@
 import os
+import random
 import numpy as np
 from PIL import Image
 from src.io import read_rgb
@@ -25,6 +26,7 @@ class TrainDataset(Dataset):
         train: bool,
         class_map: Dict[int, Union[str, List[str]]],
         max_samples_per_class: int = None,
+        random_samples: bool = False,
         transform: Callable = None,
     ) -> None:
         """Image Classification Dataset init (image folder dataset)
@@ -34,6 +36,7 @@ class TrainDataset(Dataset):
             train (bool): train mode
             class_map (Dict[int, Union[str, List[str]]], optional): class map {e.g. {0: 'class_a', 1: ['class_b', 'class_c']}}
             max_samples_per_class (int, optional): max number of samples for each class in the dataset. Defaults to None.
+            random_samples (bool, optional): if selecting randomnly the max samples per class. Defaults to False.
             transform (Callable, optional): set of data transformations. Defaults to None.
 
         Raises:
@@ -56,7 +59,10 @@ class TrainDataset(Dataset):
             raise e
         self.data_dir = data_dir
         self.class_map = class_map
-        self.images, self.targets = self._load_samples(max_samples_per_class=max_samples_per_class)
+        self.images, self.targets = self._load_samples(
+            max_samples_per_class=max_samples_per_class,
+            random_samples=random_samples
+        )
         self.transform = transform
         self.stats()
         
@@ -90,12 +96,17 @@ class TrainDataset(Dataset):
     
     def _load_samples(
         self, 
-        max_samples_per_class: int
+        max_samples_per_class: int = None,
+        random_samples: bool = False
     ) -> Tuple[List[str], List[int]]:
-        """loads image paths + targets for the dataset
+        """loads samples and targets
+
+        Args:
+            max_samples_per_class (int, optional): max samples per class. Dafaults to None.
+            random_samples (bool, optional): if selecting randomnly the max samples per class. Defaults to False. Defaults to False.
 
         Returns:
-            Tuple[List[str], List[int]]: image paths, targets
+            Tuple[List[str], List[int]]: images + targets
         """
         paths = []
         targets = []
@@ -108,10 +119,13 @@ class TrainDataset(Dataset):
                 c_images += [os.path.join(label_dir, f) for f in os.listdir(label_dir) if f.split(".")[-1].lower() in self.EXTENSIONS]
             if max_samples_per_class is not None:
                 if len(c_images) > max_samples_per_class:
-                    print(f"> Images will be limited from {len(c_images)} to {max_samples_per_class} for label {c} ({self.class_map[c]})")
-                    c_images = c_images[:max_samples_per_class]
+                    print(f"> Images will be limited from {len(c_images)} to {max_samples_per_class} {'(selected randomnly) ' if random_samples else ''}for label {c} ({self.class_map[c]})")
+                    if random_samples:
+                        c_images = random.sample(c_images, max_samples_per_class)
+                    else:
+                        c_images = c_images[:max_samples_per_class]
             c_targets += [c] * len(c_images)
-            
+
             paths += c_images
             targets += c_targets
         
