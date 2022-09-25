@@ -1,5 +1,5 @@
 <p align="center">
-    <img width="70%" src="static/playground.png" alt>
+    <img width="100%" src="static/playground.png" alt>
 </p>
 
 # **classifier-playground**
