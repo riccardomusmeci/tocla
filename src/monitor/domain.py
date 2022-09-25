@@ -2,7 +2,6 @@ import torch
 import numpy as np
 import torch.nn as nn
 from tqdm import tqdm
-from src.plot import Plotter
 from src.utils import Device
 import torch.nn.functional as F
 from src.monitor import ModelMonitor
@@ -82,8 +81,12 @@ class DomainShiftMonitor:
                 
     def estimate(
         self,
-        plot: bool = True
     ) -> Dict[str, np.array]:
+        """estimates the domain shift with wasserstein distance for each target layer
+
+        Returns:
+            Dict[str, np.array]: for each target layer X, y distribution (y represents two datasets).
+        """
         embeddings = []
         for i, dataset in enumerate(self.datasets):
             print(f"> Extracting embedding for the {'first' if i==0 else 'second'} dataset.")
