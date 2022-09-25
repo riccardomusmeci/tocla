@@ -80,7 +80,7 @@ def inference(args):
     num_classes = len(config["datamodule"]["class_map"])    
     dataset = InferenceDataset(
         root_dir=args.data_dir,
-        class_map=class_map if args.pseudolabel else None,
+        class_map=class_map if args.split else None,
         transform=Transform(train=False, **config["transform"])
     )
     

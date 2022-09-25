@@ -37,10 +37,10 @@ def parse_args() -> argparse.Namespace:
     )
     
     parser.add_argument(
-        "--pseudolabel",
+        "--split",
         default=False,
         type=lambda x: (str(x).lower() == 'true'),
-        help="to perform pseudo-labeling analysis on split dataset"
+        help="if dataset is split into classes' folders"
     )
     
     parser.add_argument(
