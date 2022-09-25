@@ -49,7 +49,6 @@ def train(args):
         lr_scheduler=lr_scheduler
     )
     
-        
     logger = Logger(output_dir=output_dir)
     callbacks = Callbacks(output_dir=checkpoint_dir, **config["callbacks"])
     
