@@ -1,31 +1,32 @@
 ###### Datamodule ######
 datamodule:
-  class_map: {
-    0: "class_a",
-    1: "class_b"
+  class_map: {                              # your class map 
+    0: "class_a",                           # you can also aggregate classes { 0: 'class_a', 1: ['class_b', 'class_c']}
+    1: "class_b"                            # based on your dataset's folders
   }
-  imbalanced: true
-  max_samples_per_class: 5000
-  random_sample: true
-  batch_size: 64
-  shuffle: true
-  num_workers: 5
-  pin_memory: true
+  imbalanced: true                          # if dataset is imblanced, set this to true
+  max_samples_per_class: 5000               # maximum number of annotations per class
+  random_sample: true                       # true if you wanto to select your max annotations randomly
+  batch_size: 64                            # batch size
+  shuffle: true                             # if imbalanced is true, this is ignored
+  num_workers: 5                            # num data loader workers
+  pin_memory: true        
   drop_last: false
   persistent_workers: true
 
+###### Trainer ######
 trainer:
-  accelerator: gpu                                         
-  devices: 1                                              
-  max_epochs: 100
-  precision: 16
+  accelerator: gpu                           # if gpu, pytorch lightning will detect which one (also MPS for M1)                                 
+  devices: 1                                
+  max_epochs: 100       
+  precision: 16                              # leave it to 16 for faster trainings
   check_val_every_n_epoch: 1
   gradient_clip_val: null
 
 ###### Model ######
 model:
-  model_name: resnet18
-  pretrained: true
+  model_name: resnet18                        # timm model (check out here https://github.com/rwightman/pytorch-image-models/blob/master/results/results-imagenet.csv)
+  pretrained: true                            # pretrained weights
 
 ###### Loss ###### 
 loss:                                           
@@ -64,7 +65,7 @@ transform:
   solarize_t: 170                             # solarization threshold
 
 
-##### Callbacks #####
+##### Callbacks ##### (the less you edit it the better :D)
 callbacks:
   filename: epoch={epoch}-step={step}-val_loss={loss/val:.3f}-val_acc={acc/val:.3f}-val_f1={f1/val:.3f}-cal_err={cal_err/val:.5f}
   monitor: f1/val
