@@ -11,3 +11,4 @@ torchvision==0.13.0
 torchmetrics
 seaborn
 umap-learn
+streamlit

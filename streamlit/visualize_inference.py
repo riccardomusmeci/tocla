@@ -56,7 +56,7 @@ def previous_image():
 
              
 st.set_page_config(layout="wide")
-st.title("Pseudo Labels Analysis", anchor=None)
+st.title("Inference Analysis", anchor=None)
 
 DATA_DIR = "data"
 
