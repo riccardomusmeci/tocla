@@ -91,7 +91,14 @@ If you find something wrong in your dataset, you can change the label accordingl
 
 Implementation of [Measuring Domain Shift for Deep Learning in Histopathology](https://www.diva-portal.org/smash/get/diva2:1478702/FULLTEXT02.pdf) to estimate the representation shift (with Wasserstein distance) for a new dataset for a model trained another dataset.
 
-To do so, just use the notebook **notebooks/domain-shift-estimation.ipynb**
+To do so, just use the notebook **notebooks/domain-shift-estimation.ipynb**.
+
+Embedding plot in 2D is made with [pymde](https://pymde.org), which is the best one to represents embeddings with high-dim in 2D since it preserves distances between embeds while reducing their dim.
+
 <p align="center">
     <img width="100%" src="static/domain-shift.png" alt>
 </p>
+
+
+
+
