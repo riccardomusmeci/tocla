@@ -20,8 +20,25 @@ class DataModule(pl.LightningDataModule):
         num_workers: int = 5,
         pin_memory: bool = True,
         drop_last: bool = False,
-        persistent_workers: bool = True
+        persistent_workers: bool = True,
     ):
+        """DataModule init
+
+        Args:
+            root_dir (str): dataset root dir
+            class_map (Dict[int, Union[str, List[str]]]): class map
+            batch_size (int): batch size
+            max_samples_per_class (int, optional): max samples per class in the dataset. Defaults to None.
+            random_samples (bool, optional): if random sampling if max samples per class is not None. Defaults to False.
+            train_transform (Callable, optional): train data augmentation. Defaults to None.
+            val_transform (Callable, optional): val data augmentation. Defaults to None.
+            imbalanced (bool, optional): if dataset is imbalanced. Defaults to False.
+            shuffle (bool, optional): whether to shuffle dataset. Defaults to True.
+            num_workers (int, optional): num workers. Defaults to 5.
+            pin_memory (bool, optional): data loader pin memory. Defaults to True.
+            drop_last (bool, optional): drop last data loader. Defaults to False.
+            persistent_workers (bool, optional): persistent workers data loader. Defaults to True.
+        """
         super().__init__()
         self.root_dir = root_dir
         self.class_map = class_map
