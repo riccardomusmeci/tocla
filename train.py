@@ -1,5 +1,8 @@
+import ssl
 import argparse
 from src.core import train
+
+ssl._create_default_https_context = ssl._create_unverified_context
 
 def parse_args() -> argparse.Namespace:
     
