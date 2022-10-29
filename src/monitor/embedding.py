@@ -1,4 +1,3 @@
-from cv2 import _InputArray_STD_VECTOR
 import torch
 import numpy as np
 import torch.nn as nn
@@ -21,6 +20,16 @@ class EmbeddingExtractor:
         verbose: bool = True,
         is_vit: bool = False
     ) -> None:
+        """Embedding extractor class
+
+        Args:
+            model (nn.Module): model 
+            embed_layer (str): which embed layer of the model to consider
+            dataset (InferenceDataset): dataset to extract embeddings from
+            batch_size (int, optional): batch size. Defaults to 32.
+            verbose (bool, optional): verbose mode. Defaults to True.
+            is_vit (bool, optional): if model is ViT base. Defaults to False.
+        """
         
         self.model = model.to(Device())
         self.model_monitor = ModelMonitor(model, verbose)
@@ -39,7 +48,7 @@ class EmbeddingExtractor:
         """computes embedding the embed layer
 
         Returns:
-            Dict[str, np.array]: dict with target layer as key and dataset embeddings
+            Tuple[np.array, np.array]: tuple with embeddings and predictions from model
         """
         embeds, preds = [], []
         for batch in tqdm(self.data_loader, total=len(self.data_loader)):

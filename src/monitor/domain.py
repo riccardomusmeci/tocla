@@ -9,7 +9,6 @@ from torch.utils.data import DataLoader
 from src.dataset import InferenceDataset
 from typing import List, Tuple, Union, Dict
 from scipy.stats import wasserstein_distance
-from scipy.special import kl_div
 
 class DomainShiftMonitor:
         
@@ -22,10 +21,6 @@ class DomainShiftMonitor:
         verbose: bool = True
     ) -> None:
         
-        self.measure_fn = {
-            "wasserstein": wasserstein_distance,
-            "kl_div": kl_div
-        }
         
         assert len(datasets)==2, f"You can analyze two datasets at a time, not {len(datasets)}."
         
@@ -45,6 +40,7 @@ class DomainShiftMonitor:
         )
                 
         for target_layer in self.target_layers:
+            print(f"Adding {target_layer} to monitor with hooks.")
             self.model_monitor.add_layer(layer_name=target_layer)
     
     @torch.no_grad()

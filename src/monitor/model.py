@@ -1,4 +1,3 @@
-from tabnanny import verbose
 import torch
 import torch.nn as nn
 
@@ -7,7 +6,7 @@ class ModelMonitor:
     def __init__(
         self,
         model: nn.Module,
-        verbose: bool
+        verbose: bool = True
     ):
         """Model Monitor init
 
@@ -39,7 +38,7 @@ class ModelMonitor:
         Raises:
             ValueError: if layer is not found
         """
-        
+        self.layer_found = False
         self._explore_and_hook(
             model=self.model,
             root_layer_name="",
@@ -110,7 +109,7 @@ class ModelMonitor:
         
         for layer_name, layer in model.named_children():
             complete_name = root_layer_name + "." + layer_name
-            if verbose:
+            if self.verbose:
                 print(f"> {complete_name} -> {type(layer)}")
             
             if len(list(layer.children())) == 0:
