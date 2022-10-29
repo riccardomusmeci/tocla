@@ -5,8 +5,8 @@ datamodule:
     1: "class_b"                            # based on your dataset's folders
   }
   imbalanced: true                          # if dataset is imblanced, set this to true
-  max_samples_per_class: 5000               # maximum number of annotations per class
-  random_sample: true                       # true if you wanto to select your max annotations randomly
+  max_samples_per_class: null               # maximum number of annotations per class
+  random_sample: false                      # true if you wanto to select your max annotations randomly
   batch_size: 64                            # batch size
   shuffle: true                             # if imbalanced is true, this is ignored
   num_workers: 5                            # num data loader workers
