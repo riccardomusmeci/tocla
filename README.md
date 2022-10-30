@@ -24,12 +24,12 @@ The script *inference.py* is an entry point to predict labels on your dataset.
 
 ```
 python inference.py \
-    --data-dir PATH/TO/YOUR/DATASET 
-    --model-dir PATH/TO/TRAIN/OUTPUT/DIR
-    --config CONFIG/NAME/IN/TRAIN/OUTPUT/DIR.yml
-    --ckpt CHECKPOINT/FILE/IN/OUTPUT/DIR.ckpt 
-    --batch-size 128 
-    --split [true|false] 
+    --data-dir PATH/TO/YOUR/DATASET \
+    --model-dir PATH/TO/TRAIN/OUTPUT/DIR \
+    --config CONFIG/NAME/IN/TRAIN/OUTPUT/DIR.yml \
+    --ckpt CHECKPOINT/FILE/IN/OUTPUT/DIR.ckpt \
+    --batch-size 128 \
+    --split [true|false] \
     --output OUTPUT/WITH/PREDICTION/FILENAME.json
 ```
 [:warning: WARNING]
