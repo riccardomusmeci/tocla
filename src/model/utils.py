@@ -35,7 +35,7 @@ def create_model(
             state_dict = state_dict["state_dict"]
         
         state_dict = {
-            k.replace("model.", ""): w for k, w in state_dict.items()
+            k.replace("model.", ""): w for k, w in state_dict.items() if "criterion" not in k
         }
         model.load_state_dict(state_dict=state_dict)
         print(f"> Loaded state dict from {checkpoint_path}")
