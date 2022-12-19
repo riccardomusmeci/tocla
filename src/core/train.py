@@ -40,7 +40,7 @@ def train(args):
     criterion = Criterion(**config["loss"])
     optimizer = Optimizer(params=model.parameters(), **config["optimizer"])
     lr_scheduler = LRScheduler(optimizer=optimizer, **config["lr_scheduler"])
-
+    
     # pl.Module to easily train the classifier
     model = Model(
         model=model,

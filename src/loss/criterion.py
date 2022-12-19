@@ -22,6 +22,6 @@ def criterion(
             
     if 'label_smoothing' in kwargs and name=="xent":
         if kwargs['label_smoothing'] > 0:
-           kwargs['label_smoothing'] = np.float32(kwargs['label_smoothing'])
+            kwargs['label_smoothing'] = np.float32(kwargs['label_smoothing'])
     
     return FACTORY[name](**kwargs)

@@ -28,7 +28,7 @@ class Transform:
         solarization_p: float = 0.2,
         solarize_t: int = 170,
     ):
-        """DINO Transform
+        """Classifier Base Transform
 
         Args:
             train (bool): train/val transformation
