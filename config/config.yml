@@ -7,7 +7,7 @@ datamodule:
   imbalanced: true                          # if dataset is imblanced, set this to true
   max_samples_per_class: null               # maximum number of annotations per class
   random_sample: false                      # true if you wanto to select your max annotations randomly
-  batch_size: 64                            # batch size
+  batch_size: 128                           # batch size
   shuffle: true                             # if imbalanced is true, this is ignored
   num_workers: 5                            # num data loader workers
   pin_memory: true        
@@ -31,14 +31,18 @@ model:
 ###### Loss ###### 
 loss:                                           
   name: xent                                  # name of the loss criterion to use
-  weight: [0.963, 1.0399568]                  # weight for each class in the loss computation (if dataset is imbalanced) 
-  label_smoothing: 0.15                       # label smoothing factor -> to prevent model being overconfident (calibration)
+  weight: [0.55544285, 5.00914808]            # weight for each class in the loss computation (if dataset is imbalanced) 
+  label_smoothing: 0.1                        # label smoothing factor -> to prevent model being overconfident (calibration)
   
 ###### Optimizer ######  
 optimizer:
-  name: adamw                                 # optimization algorithm (sgd, adam, adamw)
-  lr: 0.001                                   # learning rate will be adapted to the rule (lr * batch_size / 256.)
-  weight_decay: 1.5e-6                        # weight decay               
+  name: sam                                   # optimization algorithm (sgd, adam, adamw)
+  base_optimer: sgd                           # base optimizer per sam
+  rho: 2                                      # Rho parameter for SAM
+  lr: 0.1                                     # base learning rate at the start of the training
+  adaptive: true                              # True if you want to use the Adaptive SAM.
+  weight_decay: 0.0005                        # l2 weigth decay
+  momentum: 0.9                               # sgd momentum
 
 ###### LR Scheduler ######
 lr_scheduler:

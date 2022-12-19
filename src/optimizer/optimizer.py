@@ -1,11 +1,13 @@
 from typing import Iterable
 from torch.optim import Optimizer
+from src.optimizer.sam import SAM
 from torch.optim import SGD, Adam, AdamW
 
 FACTORY = {
     "sgd": SGD,
     "adam": Adam,
-    "adamw": AdamW
+    "adamw": AdamW,
+    "sam": SAM
 }
 
 def optimizer(
@@ -15,5 +17,9 @@ def optimizer(
 ) -> Optimizer:
     name = name.lower()
     assert name in FACTORY.keys(), f"Only {list(FACTORY.keys())} optimizers are supported. Change {name} to one of them."
+    
+    if name == "sam":
+        kwargs["base_optimizer"] = FACTORY[kwargs["base_optimizer"]]
+    
     return FACTORY[name](params, **kwargs)
     
