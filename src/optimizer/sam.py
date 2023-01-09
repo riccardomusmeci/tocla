@@ -7,15 +7,16 @@ class SAM(torch.optim.Optimizer):
         params, 
         base_optimizer, 
         rho=0.05, 
-        adaptive=False, 
+        adaptive=False,
+        bn_to_zero=True,
         **kwargs
     ):
         assert rho >= 0.0, f"Invalid rho, should be non-negative: {rho}"
-
         defaults = dict(rho=rho, adaptive=adaptive, **kwargs)
         super(SAM, self).__init__(params, defaults)    
         self.base_optimizer = base_optimizer(self.param_groups, **kwargs)
         self.param_groups = self.base_optimizer.param_groups
+        self.bn_to_zero = bn_to_zero
         self.defaults.update(self.base_optimizer.defaults)
 
     @torch.no_grad()

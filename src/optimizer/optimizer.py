@@ -19,6 +19,7 @@ def optimizer(
     assert name in FACTORY.keys(), f"Only {list(FACTORY.keys())} optimizers are supported. Change {name} to one of them."
     
     if name == "sam":
+        print(f"> Training with SAM optimizer, it'll take twice the training time.")
         kwargs["base_optimizer"] = FACTORY[kwargs["base_optimizer"]]
     
     return FACTORY[name](params, **kwargs)
