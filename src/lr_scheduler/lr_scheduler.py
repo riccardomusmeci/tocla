@@ -1,11 +1,12 @@
 from torch.optim import Optimizer
 from torch.optim.lr_scheduler import _LRScheduler
-from torch.optim.lr_scheduler import CosineAnnealingLR, CosineAnnealingWarmRestarts, LinearLR
+from torch.optim.lr_scheduler import CosineAnnealingLR, CosineAnnealingWarmRestarts, LinearLR, StepLR
 
 FACTORY = {
     "cosine": CosineAnnealingLR,
     "cosine_restarts": CosineAnnealingWarmRestarts,
-    "linear": LinearLR
+    "linear": LinearLR,
+    "step": StepLR,
 }
 
 def lr_scheduler(
