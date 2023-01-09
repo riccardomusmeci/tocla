@@ -27,12 +27,6 @@ def parse_args() -> argparse.Namespace:
     )
     
     parser.add_argument(
-        "--resume-from",
-        default=None,
-        help="path to checkpoint (ckpt file) to resume training from"
-    )
-    
-    parser.add_argument(
         "--seed",
         default=42
     )
@@ -42,3 +36,4 @@ def parse_args() -> argparse.Namespace:
 if __name__ == "__main__":
     args = parse_args()
     train(args)
+    
