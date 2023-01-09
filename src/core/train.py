@@ -9,6 +9,7 @@ from src.transform import Transform
 from src.data import create_dataloader
 from src.lr_scheduler import LRScheduler
 from src.utils import now, seed_everything
+from src.loss.utils import find_class_weights
 from src.utils.model_checkpoint import ModelCheckpoint
 
 def train(args):
@@ -26,21 +27,25 @@ def train(args):
         root_dir=args.data_dir,
         train=True,
         transform=Transform(train=True, **config["transform"]),
-        **config["datamodule"]
+        **config["data"]
     )
     val_dataloader = create_dataloader(
         root_dir=args.data_dir,
         train=False,
         transform=Transform(train=False, **config["transform"]),
-        **config["datamodule"]
+        **config["data"]
     )
     
     # setup model, criterion, optimizer and lr_scheduler
     model = create_model(
         **config["model"],
-        num_classes=len(config['datamodule']['class_map'])
+        num_classes=len(config['data']['class_map'])
     )
     
+    # adjust class weights if asked
+    if config["loss"]["weight"] == "auto":
+        config["loss"]["weight"] = find_class_weights(train_dataloader.dataset)
+        print(f"> Found loss class weights: {config['loss']['weight']}")
     criterion = Criterion(**config["loss"])
     optimizer = Optimizer(params=model.parameters(), **config["optimizer"])
     lr_scheduler = LRScheduler(optimizer=optimizer, **config["lr_scheduler"])
