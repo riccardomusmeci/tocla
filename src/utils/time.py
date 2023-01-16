@@ -21,7 +21,8 @@ def timeit(func):
     return timeit_wrapper
 
 class TimeMonitor:
-    
+    """Time monitor class
+    """
     def __init__(
         self,
         num_iters: int
@@ -33,12 +34,19 @@ class TimeMonitor:
         self.t_iters.append(t)
         
     def estimate(self) -> float:
-        est_sec = np.mean(self.t_iters)*self.num_iters
+        if len(self.t_iters) == 0:
+            est_sec = 0
+        else:
+            est_sec = np.mean(self.t_iters)*self.num_iters
         return str(datetime.timedelta(seconds=est_sec)).split(".")[0]
     
     def elapsed(self):
         tot_sec = sum(self.t_iters)
         return str(datetime.timedelta(seconds=tot_sec)).split(".")[0]
+    
+    @property
+    def status(self) -> str:
+        return f"{self.elapsed()}<{self.estimate()}"
         
     
     
