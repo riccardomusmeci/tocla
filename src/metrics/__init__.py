@@ -1,1 +1,2 @@
-from .monitor import MetricsMonitor
+from .loss import LossMetric
+from .classification import ClassificationMetrics
