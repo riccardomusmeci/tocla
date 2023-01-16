@@ -93,7 +93,7 @@ transform:
 
 ##### Checkpoint #####
 checkpoint:
-  monitor: f1_val                             # which metric to monitor ["acc_val", "f1_val", "prec_val", "recall_val", "calerr_val", "loss_val"]
+  monitor: f1                                 # which metric to monitor ["accuracy", "loss/val", "loss/train", "recall", "calibration_error", "precision"]
   mode: max                                   # monitor mode
   save_top_k: 5                               # save top k pth models
   patience: 5                                 # number of epochs to wait before stopping training
