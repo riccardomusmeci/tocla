@@ -2,19 +2,18 @@ import torch
 from tqdm import tqdm
 import torch.nn as nn
 from src.utils import Device
+from src.bar import ProgressBar
 from torch.optim import Optimizer
 from src.optimizer.sam import SAM
-from src.bar import ProgressBar
 from src.utils import ModelCheckpoint
 from torch.utils.data import DataLoader
+from src.metrics.loss import LossMetric
 from src.utils import timeit, TimeMonitor
 from typing import Tuple, Dict, Union, List
-from torch.optim.lr_scheduler import _LRScheduler
-from src.model.utils import enable_running_stats, disable_running_stats
-from torchmetrics import Accuracy, F1Score, Precision, Recall, CalibrationError
-
-from src.metrics.loss import LossMetric
 from src.metrics import ClassificationMetrics
+from torch.optim.lr_scheduler import _LRScheduler
+from src.model._factory import enable_running_stats, disable_running_stats
+
 
 class Trainer:
     
@@ -70,13 +69,14 @@ class Trainer:
         self.model_checkpoint = model_checkpoint
         self.epoch_val_metrics = None
         
+        
         self.metrics = ClassificationMetrics(
             train_loss=LossMetric(self.check_train_every_n_iter),
             val_loss=LossMetric(len(val_dataloader)),
             metrics=metrics,
             device=device
         )
-
+        
         # Gradient clip
         self.gradient_clip_algorithm = torch.nn.utils.clip_grad.clip_grad_norm_ if gradient_clip_algorithm=="norm" \
             else torch.nn.utils.clip_grad.clip_grad_value_
@@ -92,15 +92,14 @@ class Trainer:
                         
         self.model.to(self.device)
         self.criterion.to(self.device)
-
-     
+ 
     @timeit
     def training_step(
         self, 
         batch: Tuple, 
         batch_idx: int
     ) -> float:
-        """training step
+        """Training step
 
         Args:
             batch (Tuple): batch from dataloader
@@ -116,7 +115,8 @@ class Trainer:
             self.optimizer.zero_grad()
             logits = self.model(x)
             loss = self.criterion(logits, target)
-            if self.gradient_clip_val is not None: self.gradient_clip_algorithm(self.model.parameters(), self.gradient_clip_val)
+            if self.gradient_clip_val is not None: 
+                self.gradient_clip_algorithm(self.model.parameters(), self.gradient_clip_val)
             loss.backward()
             self.optimizer.step()
         else:
@@ -144,7 +144,7 @@ class Trainer:
         self,
         epoch: int
     ) -> float:
-        """training epoch
+        """Training epoch
 
         Args:
             epoch (int): training epoch
@@ -226,9 +226,8 @@ class Trainer:
         # setting model to eval
         self.model.eval()
         
-        print("> validation step")
         val_loss = 0
-        for batch_idx, batch in tqdm(enumerate(self.val_dataloader, 0), total=len(self.val_dataloader)):
+        for batch_idx, batch in tqdm(enumerate(self.val_dataloader, 0), total=len(self.val_dataloader), desc="Validation Step"):
             # validation step
             step_loss, t_step = self.validation_step(
                 batch=(el.to(self.device) for el in batch),
@@ -237,11 +236,6 @@ class Trainer:
             val_loss += step_loss
             self.metrics.val_loss.update(step_loss)
         
-        # self.epoch_val_metrics = {
-        #     f"{m}_val": self.metrics[m].compute() for m in self.metrics
-        # }
-        # self.epoch_val_metrics["loss_val"] = val_loss/len(self.val_dataloader)
-        # print(f"> epoch={epoch}-loss/val={self.epoch_val_metrics['loss_val']} - metrics:")
         for k, v in self.metrics.status.items():
             print(f"\t> {k}={v}")
             
@@ -277,7 +271,6 @@ class Trainer:
             self.training_epoch(epoch=epoch)
             if (epoch+1) % self.check_val_every_n_epoch == 0:
                 self.validation_epoch(epoch=epoch)
-                #self.reset_metrics()
                 self.model_checkpoint.step(
                     epoch=epoch,
                     metrics=self.metrics.status,
