@@ -4,6 +4,7 @@ import numpy as np
 from PIL import Image
 from ..io import read_rgb
 from torch.utils.data import Dataset
+from pathlib import Path
 from typing import Callable, Dict, List, Tuple, Union
 
 # TODO: implement nested folders images loading
@@ -32,7 +33,7 @@ class InferenceDataset(Dataset):
     
     def __init__(
         self,
-        data_dir: str,
+        data_dir: Union[Path, str],
         transform: Callable = None,
         verbose: bool = True
     ) -> None:
@@ -68,7 +69,7 @@ class InferenceDataset(Dataset):
             raise FileExistsError(f"Folder {data_dir} does not have images.")
         
         if self.verbose:
-            print(f"> InferenceDataset sanity check OK")
+            print(f"> [INFO] InferenceDataset sanity check OK")
     
     def _load_samples(self) -> List[str]:
         """Load samples from data directory
