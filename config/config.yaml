@@ -1,0 +1,108 @@
+# =========================== Trainer ==========================
+trainer:
+  accelerator: auto                               # auto for M1 gpu, cpu, cuda
+  devices: 1                                      # number of GPUs to use (mps supports only 1 device)
+  max_epochs: 100                                 # number of training epochs
+  precision: 16-mixed                             # 16-mixed or 32 (Automatic Mixed Precision (AMP))
+  check_val_every_n_epoch: 1                      # check validation every n epoch
+  gradient_clip_val: 0                            # gradient clipping value
+  num_sanity_val_steps: 2                         # number of sanity validation steps
+  reload_dataloaders_every_n_epochs: 0            # reload dataloaders every n epochs (0 to disable)
+
+# ========================== Datamodule =============================
+datamodule:
+  class_map: {                                    # class map for classification
+    0: "class_a",                                 # class index: class name or [class_name1, class_name2]
+    1: "class_b",
+    2: ["class_c", "class_d"],
+  }
+  engine: pil                                    # image engine (pil, opencv)
+  imbalanced: true                               # if dataset is imbalanced
+  batch_size: 32                                 # batch size
+  shuffle: false                                 # shuffle dataset
+  num_workers: 4                                 # number of workers
+  pin_memory: true                               # pin memory
+  drop_last: false                               # drop last batch
+  persistent_workers: true                       # persistent workers
+
+# =========================== Logger ==============================
+logger:
+  save_dir: tb_logs                              # directory to save logs (saved in output_dir/tb_logs)
+  name: experiment-effnetb0                      # name of the experiment
+  default_hp_metric: false                       # log default hp metric
+
+# =========================== Model ==============================
+model:
+  model_name: efficientnet_b0                   # timm model name
+  pretrained: true                              # use pretrained weights
+  bn_to_zero_on_sam: true                       # set batch norm to zero on SAM optimizer (Sharpness-Aware Minimization for Efficiently Improving Generalization)
+
+# =========================== Metrics ==============================
+metrics:
+  task: multiclass                              # task type (binary, multiclass)
+  average: macro                                # averaging method (micro, macro, weighted, none)
+
+# =========================== Loss ==============================
+loss:
+  name: xent                                    # name of the loss criterion to use
+  weight: auto                                  # weight for each class in the loss computation (if dataset is imbalanced)
+  label_smoothing: 0.1                          # label smoothing factor -> to prevent model being overconfident (calibration) -
+
+# =========================== Optimizer ==============================
+optimizer:
+  name: adamw                                   # optimization algorithm (sgd, adam, adamw)
+  lr: 0.001                                     # learning rate
+  betas: [0.9,0.999]                            # betas
+  eps: 1.0e-08                                  # eps
+  weight_decay: 0.01                            # weight decay
+  amsgrad: false                                # amsgrad
+
+# =========================== LR Scheduler ==============================
+lr_scheduler:
+  name: cosine_restarts                         # learning rate scheduler name
+  T_0: 10                                       # number of iterations for the first restart (e.g. 10 means afer 10 epochs)
+  T_mult: 2                                     # a factor increases t_i after a restart
+  eta_min: 0                                    # minimum learning rate
+
+# =========================== Transform ==============================
+transform:
+  input_size: [224, 224]                        # model input size (int, list, tuple)
+  mean: [0.485, 0.456, 0.406]                   # to not apply normalization put [0, 0, 0]
+  std: [0.229, 0.224, 0.225]                    # to not apply normalization put [1, 1, 1]
+  interpolation: 3                              # interpolation mode
+  horizontal_flip_prob: .2                      # horizontal flip probability
+  vertical_flip_prob: 0.5                       # vertical flip probability
+  border_mode: 0                                # border mode
+  ssr_prob: 0.1                                 # random shift, scale and rotate probability (0 to disable)
+  ssr_rotate_limit: 20                          # maximum rotation angle
+  ssr_scale_limit: 0.5                          # maximum scale factor
+  ssr_shift_limit: 0.1                          # maximum shift factor
+  ssr_value: 0                                  # padding value
+  gauss_prob: 0.0                               # gaussian noise probability
+  gauss_var_limit: [10, 50]                     # gaussian noise variance limit
+  gauss_mean: 0                                 # gaussian noise mean
+  random_crop_prob: 0.0                         # random crop prob
+  first_oneof_prob: 0.66                        # first oneof prob
+  sharpen_prob: 0.5                             # sharpen prob
+  sharpen_alpha: [0.2, 0.5]                     # sharpen alpha
+  sharpen_lightness: [0.5, 1.0]                 # sharpen lightness
+  blur_prob: 0.0                                # blur prob
+  blur_limit: [3, 3]                            # blur limit
+  motion_blur_prob: 0.0                         # motion blur prob
+  motion_blur_limit: 3                          # motion blur limit
+  second_oneof_prob: 0.0                        # second oneof prob
+  random_brightness_contrast_prob: 0.5          # random brightness and contrast prob
+  brightness_limit: 0.1                         # brightness limit
+  contrast_limit: 0.1                           # contrast limit
+  hsv_prob: 0.5                                 # hue saturation value prob
+  hue_shift_limit: 10                           # hue shift limit
+  sat_shift_limit: 10                           # saturation shift limit
+  val_shift_limit: 20                           # value shift limit
+
+# =========================== Callbacks ==============================
+callbacks:
+  filename: epoch={epoch}-step={step}-{loss_val:.4f}-{acc:.4f}-{f1:.4f}-{prec:.4f}-{rec:.4f}-{cal_err:.4f}
+  monitor: loss_val
+  mode: min
+  save_top_k: 5
+  patience: 10
