@@ -2,8 +2,9 @@ import os
 import random
 import numpy as np
 from PIL import Image
-from src.io import read_rgb
+from ..io import read_rgb
 from torch.utils.data import Dataset
+from pathlib import Path
 from typing import Callable, Dict, List, Tuple, Union
 
 class ImageFolderDataset(Dataset):
@@ -34,7 +35,7 @@ class ImageFolderDataset(Dataset):
     
     def __init__(
         self,
-        data_dir: str,
+        data_dir: Union[Path, str],
         class_map: Dict[int, Union[str, List[str]]],
         max_samples_per_class: int = None,
         transform: Callable = None,
@@ -86,7 +87,7 @@ class ImageFolderDataset(Dataset):
                     raise FileExistsError(f"Folder {label_dir} is empty.")
                 
         if self.verbose:
-            print(f"> ImageFolderDataset sanity check OK")
+            print(f"> [INFO] ImageFolderDataset sanity check OK")
     
     def _load_samples(
         self, 
