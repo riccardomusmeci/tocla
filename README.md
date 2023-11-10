@@ -152,7 +152,7 @@ for epoch in range(NUM_EPOCHS):
         optimizer.zero_grad()
         x, target = batch
         logits = model(x)
-        loss = criterion(preds, target)
+        loss = criterion(logits, target)
         loss.backward()
         optimizer.step()
 ```
