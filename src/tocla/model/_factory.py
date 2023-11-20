@@ -12,7 +12,7 @@ def create_model(
     pretrained: bool = True,
     num_classes: int = 0,
     ckpt_path: Optional[Union[str, Path]] = None,
-    to_replace: Optional[str] = None,
+    to_replace: Optional[str] = "model.",
     prefix_key: Optional[str] = None,
 ) -> nn.Module:
     """Create model utils function.
@@ -39,9 +39,21 @@ def create_model(
     )
 
     if ckpt_path is not None:
-        state_dict = load_ckpt(ckpt_path=ckpt_path, prefix_key=prefix_key, to_replace=to_replace)
-        model.load_state_dict(state_dict=state_dict)
-        print(f"> Loaded state dict from {ckpt_path}")
+        try:
+            state_dict = load_ckpt(ckpt_path=ckpt_path, prefix_key=prefix_key, to_replace=to_replace)
+            model.load_state_dict(state_dict=state_dict)
+            print(f"> Loaded state dict from {ckpt_path}")
+        except Exception as e:
+            print(f"> Found error while loading state dict from {ckpt_path}: {e}")
+            print("> Trying with adapting state dict keys...")
+            state_dict = load_and_adapt_ckpt(
+                model_state_dict=model.state_dict(),
+                ckpt_path=ckpt_path,
+                prefix_key=prefix_key,
+                to_replace=to_replace,
+            )
+            model.load_state_dict(state_dict=state_dict)
+            print(f"> Loaded state dict from {ckpt_path}")
 
     return model
 
