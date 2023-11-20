@@ -1,20 +1,18 @@
-from typing import Dict, List, Optional, Union
-from pathlib import Path
-
 import os
-
-from ..pl import ClassificationDataModule, ClassificationModelModule
-from ..io import ToclaConfiguration
-from ..transform import Transform
-from ..model import create_model
-from ..loss import create_criterion
-from ..optimizer import create_optimizer
-from ..lr_scheduler import create_lr_scheduler
-from ..pl import create_callbacks
-from ..utils import now
+from pathlib import Path
+from typing import Dict, List, Optional, Union
 
 from pytorch_lightning import Trainer
 from pytorch_lightning.loggers import TensorBoardLogger
+
+from ..io import ToclaConfiguration
+from ..loss import create_criterion
+from ..lr_scheduler import create_lr_scheduler
+from ..model import create_model
+from ..optimizer import create_optimizer
+from ..pl import ClassificationDataModule, ClassificationModelModule, create_callbacks
+from ..transform import Transform
+from ..utils import now
 
 
 def train(
