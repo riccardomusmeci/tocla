@@ -28,7 +28,7 @@ datamodule:
 # =========================== Logger ==============================
 logger:
   save_dir: tb_logs                              # directory to save logs (saved in output_dir/tb_logs)
-  name: experiment-effnetb0                      # name of the experiment
+  name: experiment-tocla                         # name of the experiment
   default_hp_metric: false                       # log default hp metric
 
 # =========================== Model ==============================
